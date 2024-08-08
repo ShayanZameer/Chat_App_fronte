@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 import axios from "Axios";
 
 const ForgotPassword = () => {
@@ -6,6 +8,7 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,8 +17,10 @@ const ForgotPassword = () => {
     setSuccess("");
 
     try {
-      const response = await axios.post("/api/forgot-password", { email });
-      setSuccess(response.data.message);
+      //   const response = await axios.post("/api/forgot-password", { email });
+      //   // setSuccess(response.data.message);
+
+      navigate("/resetpassword");
     } catch (err) {
       setError(
         err.response?.data?.message || "An error occurred. Please try again."
