@@ -1,18 +1,48 @@
 import React, { useState } from "react";
+import axios from "Axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       setError("Both fields are required.");
       return;
     }
-    // Perform login logic here
-    console.log("Login successful", { email, password });
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    try {
+      console.log("hello");
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_URL}/api/users/login`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("response is", response);
+      setSuccess("User Logged in successfully");
+
+      setTimeout(() => {
+        setSuccess("");
+      }, 4000);
+    } catch (error) {
+      setError("There is some error");
+      setSuccess("");
+      setTimeout(() => {
+        setError("");
+      }, 4000);
+    }
   };
 
   return (
@@ -22,6 +52,12 @@ const Login = () => {
         {error && (
           <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-gray-100 text-green-700 p-2 rounded mb-4 text-center">
+            {success}
           </div>
         )}
         <form onSubmit={handleSubmit}>

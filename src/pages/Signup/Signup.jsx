@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 
+import axios from "Axios";
+import { useNavigate } from "react-router-dom";
+
 const Signup = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [pic, setPic] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [pic, setPic] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -12,16 +18,48 @@ const Signup = () => {
     setPic(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
     if (!name || !email || !password || !pic) {
       setError("All fields are required.");
       return;
     }
-    setError("");
-    setSuccess("Account created successfully.");
-    // Handle signup logic here (e.g., API call)
-    console.log("Signup successful", { name, email, password, pic });
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("confirmPassword", confirmPassword);
+
+    formData.append("pic", pic);
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_URL}/api/users/signup`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setSuccess("User registered successfully");
+      setError("");
+
+      setName("");
+      setEmail("");
+      setConfirmPassword("");
+      setPassword("");
+      setPic("");
+
+      navigate("/");
+    } catch (error) {
+      console.log("error is there");
+
+      setSuccess("");
+    }
   };
 
   return (
@@ -83,6 +121,23 @@ const Signup = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-gray-700 font-bold mb-2"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
               required
             />

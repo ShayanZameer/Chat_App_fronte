@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-import axios from "Axios";
+// import axios from "Axios";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
