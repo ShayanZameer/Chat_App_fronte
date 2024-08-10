@@ -9,7 +9,10 @@ const Chat = () => {
   return (
     <div className="flex">
       <SideBar setSelectedChat={setSelectedChat} />
-      <ChatWindow selectedChat={selectedChat} />
+      <ChatWindow
+        selectedChat={selectedChat}
+        setSelectedChat={setSelectedChat}
+      />
     </div>
   );
 };
