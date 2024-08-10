@@ -157,6 +157,15 @@ const Login = () => {
         }
       );
 
+      const { token } = response.data;
+      const userId = response.data.user.userId;
+
+      console.log("token is ", userId);
+
+      // Store token in local storage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userId", userId);
+
       toast.success("Login Successfully");
       setTimeout(() => {
         navigate("/chats");

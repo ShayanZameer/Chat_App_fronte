@@ -1,16 +1,19 @@
 import React from "react";
 
 const ChatDetails = ({ chat }) => {
+  const receiver = chat.users[1];
   return (
     <div className="p-4 border-b flex items-center">
       <img
-        src={chat.profilePicture}
+        src={receiver.pic}
         alt="Profile"
         className="w-10 h-10 rounded-full object-cover"
       />
       <div className="ml-4">
-        <h3 className="text-lg font-semibold">{chat.chatName}</h3>
-        <p className="text-sm text-gray-500">{chat.info}</p>
+        <h3 className="text-lg font-semibold">{receiver.name}</h3>
+        <p className="text-sm text-gray-500">
+          This is <span>{receiver.name}</span> info{" "}
+        </p>
       </div>
     </div>
   );

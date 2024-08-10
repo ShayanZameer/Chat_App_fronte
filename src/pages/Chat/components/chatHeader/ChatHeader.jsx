@@ -1,17 +1,3 @@
-// import React from "react";
-// import { FaEllipsisV } from "react-icons/fa"; // 3-dot icon
-
-// const ChatHeader = () => {
-//   return (
-//     <div className="flex justify-between items-center p-4 border-b">
-//       <h2 className="text-2xl font-semibold">Chats</h2>
-//       <FaEllipsisV className="text-xl cursor-pointer" />
-//     </div>
-//   );
-// };
-
-// export default ChatHeader;
-
 import React, { useState } from "react";
 import { FaEllipsisV, FaPlus } from "react-icons/fa";
 import ChatOptionModal from "../ChatOptionsModal/ChatOptionModal";
@@ -38,7 +24,7 @@ const ChatHeader = () => {
 
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md">
-      <div className="text-xl font-bold">Chat Header</div>
+      <div className="text-xl font-bold">Chats</div>
       <div className="flex items-center">
         <button
           onClick={handleInitiateChatClick}

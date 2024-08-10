@@ -1,47 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "Axios";
 import ChatItem from "../ChatItem/ChatItem";
 
-// Dummy data for chats
-const chats = [
-  {
-    id: 1,
-    profilePicture: "https://via.placeholder.com/150",
-    chatName: "John Doe",
-    latestMessage: "Hey! How are you?",
-    info: "This is John's chat info",
-    messages: [
-      { sender: "John Doe", content: "Hey! How are you?" },
-      { sender: "You", content: "I'm good, thanks!" },
-    ],
-  },
-  {
-    id: 2,
-    profilePicture: "https://via.placeholder.com/120",
-    chatName: "Jane Smith",
-    latestMessage: "Meeting at 5 PM",
-    info: "This is Jane's chat info",
-    messages: [
-      { sender: "Jane Smith", content: "Meeting at 5 PM" },
-      { sender: "You", content: "Sure, see you there!" },
-      // Add more messages
-    ],
-  },
-];
-
 const ChatsList = ({ setSelectedChat }) => {
+  const [chats, setChats] = useState([]);
+  const currentUserId = localStorage.getItem("userId"); // Assuming the current user's ID is stored in localStorage
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_HOST_URL}/api/chat/fetchchats`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+        setChats(response.data);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+      }
+    };
+
+    fetchChats();
+  }, []);
+
+  // const getReceiverInfo = (users) => {
+  //   return users.find((user) => user._id !== currentUserId) || {};
+  // };
+
   return (
     <div className="overflow-y-auto">
-      {chats.map((chat) => (
-        <ChatItem
-          key={chat.id}
-          profilePicture={chat.profilePicture}
-          chatName={chat.chatName}
-          latestMessage={chat.latestMessage}
-          onClick={() => {
-            setSelectedChat(chat);
-          }}
-        />
-      ))}
+      {chats.map((chat) => {
+        const receiver = chat.users[1];
+        console.log("Receiver Info:", receiver); // Debugging: Log receiver info
+
+        return (
+          <ChatItem
+            key={chat._id}
+            profilePicture={receiver.pic}
+            chatName={receiver.name || "Unknown"}
+            latestMessage={chat.latestMessage?.content || "No messages yet"}
+            onClick={() => {
+              setSelectedChat(chat);
+            }}
+          />
+        );
+      })}
     </div>
   );
 };
