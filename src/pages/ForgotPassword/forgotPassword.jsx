@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-// import axios from "Axios";
+import axios from "Axios";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -12,15 +12,27 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
+    // setLoading(true);
+    // setError("");
+    // setSuccess("");
+
+    const formData = new FormData();
+    formData.append("email", email);
 
     try {
-      //   const response = await axios.post("/api/forgot-password", { email });
-      //   // setSuccess(response.data.message);
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_URL}/api/users/forgotpassword`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      navigate("/resetpassword");
+      console.log("Resonse", response);
+      setSuccess("check your email");
+      // navigate("/resetpassword");
     } catch (err) {
       setError(
         err.response?.data?.message || "An error occurred. Please try again."
@@ -33,6 +45,8 @@ const ForgotPassword = () => {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border border-gray-300 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Forgot Password</h2>
+      {error && <p className="text-red-600">{error}</p>}
+      {success && <p className="text-green-600 pb-5">{success}</p>}
       <p className="mb-6">
         Enter your email address below, and we will send you a link to reset
         your password.
@@ -56,9 +70,6 @@ const ForgotPassword = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-
-        {error && <p className="text-red-600">{error}</p>}
-        {success && <p className="text-green-600">{success}</p>}
 
         <button
           type="submit"

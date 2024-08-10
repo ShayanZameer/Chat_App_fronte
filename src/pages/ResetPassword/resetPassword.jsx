@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "Axios";
 
 const ResetPassword = () => {
+  const { token } = useParams();
+  // console.log("token is ", token);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,24 +24,26 @@ const ResetPassword = () => {
       return;
     }
 
-    setError(""); // Clear previous errors
+    setError("");
+    const formData = new FormData();
+
+    formData.append("password", password);
+    formData.append("confirmPassword", confirmPassword);
 
     try {
-      // Simulate API call to reset password
-      const response = await fetch("/api/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      if (response.ok) {
-        setSuccess("Password reset successfully!");
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to reset password");
-      }
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_URL}/api/users/resetpassword/${token}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      setSuccess("Password reset successfully!");
+      setPassword("");
+      setConfirmPassword("");
     } catch (error) {
       setError("Something went wrong. Please try again.");
     }

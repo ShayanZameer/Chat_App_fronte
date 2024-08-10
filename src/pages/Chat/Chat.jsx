@@ -1,26 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "Axios";
+import { useState } from "react";
+import SideBar from "../../components/chatSidebar/sideBar";
+
+import ChatWindow from "../../components/ChatWindow.jx/ChatWindow";
 
 const Chat = () => {
-  const [chats, setChats] = useState([]);
-
-  const fetchChats = async () => {
-    const { data } = await axios.get("http://localhost:5000/api/chats");
-
-    console.log("fetched data is ", data);
-
-    setChats(data);
-  };
-
-  useEffect(() => {
-    fetchChats();
-  }, []);
+  const [selectedChat, setSelectedChat] = useState(null);
 
   return (
-    <div>
-      {chats.map((chat) => {
-        return <div key={chat._id}>{chat.chatName}</div>;
-      })}
+    <div className="flex">
+      <SideBar setSelectedChat={setSelectedChat} />
+      <ChatWindow selectedChat={selectedChat} />
     </div>
   );
 };
