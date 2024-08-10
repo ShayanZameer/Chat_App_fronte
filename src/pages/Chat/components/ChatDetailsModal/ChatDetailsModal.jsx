@@ -1,28 +1,93 @@
 import React, { useState } from "react";
+import axios from "Axios";
 
 const ChatDetailsModal = ({ chatType, onClose }) => {
   const [email, setEmail] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupMembers, setGroupMembers] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    const currentUserId = localStorage.getItem("userId"); // Assuming you have the current user ID in localStorage
+
     if (chatType === "one-on-one") {
-      // Handle one-on-one chat creation logic
-      console.log("Starting one-on-one chat with:", email);
+      if (!validateEmail(email)) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        // Step 1: Fetch the user ID by email
+        const userResponse = await axios.get(
+          `${import.meta.env.VITE_HOST_URL}/api/users/getidbyemail`,
+          {
+            params: { email },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        const recipientUserId = userResponse.data.userId; // Assuming the response contains the user ID
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_HOST_URL}/api/chat/createchat`,
+          {
+            chatName: email,
+            users: [recipientUserId],
+            isGroupChat: false,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        console.log("Chat created successfully:", response.data);
+        onClose();
+      } catch (error) {
+        console.error("Error creating chat:", error.response?.data || error);
+        setError("Failed to create chat. Please try again.");
+      }
     } else if (chatType === "group") {
-      // Handle group chat creation logic
       const membersArray = groupMembers
         .split(",")
         .map((member) => member.trim());
-      console.log(
-        "Creating group chat with name:",
-        groupName,
-        "and members:",
-        membersArray
-      );
+
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_HOST_URL}/api/chat/createchat`,
+          {
+            chatName: groupName,
+            users: [currentUserId, ...membersArray], // Include current user and group members
+            isGroupChat: true,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        console.log("Group chat created successfully:", response.data);
+        onClose();
+      } catch (error) {
+        console.error(
+          "Error creating group chat:",
+          error.response?.data || error
+        );
+        setError("Failed to create group chat. Please try again.");
+      }
     }
-    onClose();
   };
 
   return (
@@ -50,6 +115,7 @@ const ChatDetailsModal = ({ chatType, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                 required
               />
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             </div>
           ) : (
             <>

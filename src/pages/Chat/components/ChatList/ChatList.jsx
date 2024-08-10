@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Fixed capitalization
+import axios from "Axios";
 import ChatItem from "../ChatItem/ChatItem";
 
 const ChatsList = ({ setSelectedChat }) => {
