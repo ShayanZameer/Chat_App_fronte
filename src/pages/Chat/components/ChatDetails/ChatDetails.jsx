@@ -1,7 +1,9 @@
 import React from "react";
 
 const ChatDetails = ({ chat }) => {
-  const receiver = chat.users[1];
+  const currentUserId = localStorage.getItem("userId");
+  const receiver = chat.users.find((user) => user._id !== currentUserId);
+  console.log(receiver, "hhh");
   return (
     <div className="p-4 border-b flex items-center">
       <img

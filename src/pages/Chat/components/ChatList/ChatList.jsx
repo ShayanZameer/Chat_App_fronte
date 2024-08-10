@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "Axios";
+import axios from "axios"; // Fixed capitalization
 import ChatItem from "../ChatItem/ChatItem";
 
 const ChatsList = ({ setSelectedChat }) => {
   const [chats, setChats] = useState([]);
-  const currentUserId = localStorage.getItem("userId"); // Assuming the current user's ID is stored in localStorage
+
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -26,21 +27,17 @@ const ChatsList = ({ setSelectedChat }) => {
     fetchChats();
   }, []);
 
-  // const getReceiverInfo = (users) => {
-  //   return users.find((user) => user._id !== currentUserId) || {};
-  // };
-
   return (
     <div className="overflow-y-auto">
       {chats.map((chat) => {
-        const receiver = chat.users[1];
-        console.log("Receiver Info:", receiver); // Debugging: Log receiver info
+        const receiver = chat.users.find((user) => user._id !== currentUserId);
+        // console.log("Receiver Info:", receiver);
 
         return (
           <ChatItem
             key={chat._id}
-            profilePicture={receiver.pic}
-            chatName={receiver.name || "Unknown"}
+            profilePicture={receiver?.pic}
+            chatName={receiver?.name || "Unknown"}
             latestMessage={chat.latestMessage?.content || "No messages yet"}
             onClick={() => {
               setSelectedChat(chat);
