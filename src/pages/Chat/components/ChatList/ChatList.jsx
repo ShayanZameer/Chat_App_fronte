@@ -16,7 +16,7 @@ const chats = [
   },
   {
     id: 2,
-    profilePicture: "https://via.placeholder.com/150",
+    profilePicture: "https://via.placeholder.com/120",
     chatName: "Jane Smith",
     latestMessage: "Meeting at 5 PM",
     info: "This is Jane's chat info",
@@ -38,7 +38,6 @@ const ChatsList = ({ setSelectedChat }) => {
           chatName={chat.chatName}
           latestMessage={chat.latestMessage}
           onClick={() => {
-            console.log("Chat clicked:", chat);
             setSelectedChat(chat);
           }}
         />
