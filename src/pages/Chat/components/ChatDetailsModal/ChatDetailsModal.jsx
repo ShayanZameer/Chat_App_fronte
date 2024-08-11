@@ -36,7 +36,7 @@ const ChatDetailsModal = ({ chatType, onClose }) => {
           }
         );
 
-        const recipientUserId = userResponse.data.userId; // Assuming the response contains the user ID
+        const recipientUserId = userResponse.data.userId;
 
         const response = await axios.post(
           `${import.meta.env.VITE_HOST_URL}/api/chat/createchat`,
@@ -64,11 +64,26 @@ const ChatDetailsModal = ({ chatType, onClose }) => {
         .map((member) => member.trim());
 
       try {
+        const userIds = await Promise.all(
+          membersArray.map(async (email) => {
+            const userResponse = await axios.get(
+              `${import.meta.env.VITE_HOST_URL}/api/users/getidbyemail`,
+              {
+                params: { email },
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                },
+              }
+            );
+            return userResponse.data.userId; // Assuming the response contains the user ID
+          })
+        );
+
         const response = await axios.post(
           `${import.meta.env.VITE_HOST_URL}/api/chat/createchat`,
           {
             chatName: groupName,
-            users: [currentUserId, ...membersArray], // Include current user and group members
+            users: [currentUserId, ...userIds], // Include current user and group member IDs
             isGroupChat: true,
           },
           {

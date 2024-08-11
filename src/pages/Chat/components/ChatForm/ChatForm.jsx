@@ -11,7 +11,6 @@ const ChatForm = ({ chatType, onChatCreated }) => {
       // Handle one-on-one chat creation logic
       onChatCreated({ type: "one-on-one", participants: [email] });
     } else if (chatType === "group") {
-      // Handle group chat creation logic
       const membersArray = groupMembers
         .split(",")
         .map((member) => member.trim());
