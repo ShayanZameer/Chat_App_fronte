@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 import axios from "Axios";
 
@@ -29,7 +29,6 @@ const ForgotPassword = () => {
 
       console.log("Resonse", response);
       setSuccess("check your email");
-      // navigate("/resetpassword");
     } catch (err) {
       setError(
         err.response?.data?.message || "An error occurred. Please try again."
