@@ -5,7 +5,7 @@ import ChatsList from "../ChatList/ChatList";
 
 const SideBar = ({ setSelectedChat }) => {
   return (
-    <div className="w-full h-screen bg-white shadow-md">
+    <div className="w-full md:w-1/4 h-screen bg-white shadow-md">
       <ChatHeader />
       <SearchBar />
       <ChatsList setSelectedChat={setSelectedChat} />

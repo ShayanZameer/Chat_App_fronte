@@ -12,6 +12,9 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // setLoading(true);
+    // setError("");
+    // setSuccess("");
 
     const formData = new FormData();
     formData.append("email", email);
