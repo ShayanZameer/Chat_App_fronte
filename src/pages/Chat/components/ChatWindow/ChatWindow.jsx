@@ -33,29 +33,50 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
               },
             }
           );
-
           setMessages(response.data);
         } catch (error) {
           console.error("Error fetching messages:", error);
         }
       };
+      console.log("messages are", messages);
 
       fetchMessages();
+      // setMessage([]);
 
       const handleMessageReceived = (newMessage) => {
         console.log("New message received:", newMessage);
-        if (newMessage.chatId === selectedChat._id) {
+
+        const messageExists = messagesRef.current.some(
+          (msg) =>
+            new Date(msg.createdAt).getTime() ===
+            new Date(newMessage.createdAt).getTime()
+        );
+        console.log("message exist is ", messageExists);
+
+        if (!messageExists && newMessage.chatId === selectedChat._id) {
           setMessages((prevMessages) => [...prevMessages, newMessage]);
         }
       };
 
+      //   const messageExists = messagesRef.current.some(
+      //     (msg) => msg._id === newMessage._id
+      //   );
+
+      //   if (!messageExists && newMessage.chatId === selectedChat._id) {
+      //     setMessages((prevMessages) => [...prevMessages, newMessage]);
+      //   }
+      // };
+
       socket.on("messageReceived", handleMessageReceived);
+      console.log("messages are", messages);
 
       const handleDisconnect = async () => {
         console.log("Socket disconnected. Storing messages...");
         try {
-          await axios.post(
-            `${import.meta.env.VITE_HOST_URL}/api/message/sendmessage`,
+          console.log("Messages to store:", messagesRef.current);
+
+          await axios.put(
+            `${import.meta.env.VITE_HOST_URL}/api/message/savemessages`,
             {
               chatId: selectedChat._id,
               messages: messagesRef.current,
@@ -66,6 +87,7 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
               },
             }
           );
+          console.log("Messages stored successfully.");
         } catch (error) {
           console.error("Error storing messages:", error);
         }
@@ -91,17 +113,18 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
       };
 
       try {
-        // Emit message to server
         socket.emit("sendMessage", newMessage);
-
-        // Optionally, you can update the local state immediately if needed
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
         setMessage("");
       } catch (error) {
         console.error("Error sending message:", error);
       }
     }
+  };
+
+  const handleManualDisconnect = () => {
+    console.log("Manually disconnecting from socket...");
+    socket.disconnect();
   };
 
   if (!selectedChat) {
@@ -133,6 +156,12 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
           className="p-2 bg-gray-400 rounded-md flex items-center justify-center"
         >
           <FaPaperPlane className="w-6 h-6 text-green-600" />
+        </button>
+        <button
+          onClick={handleManualDisconnect}
+          className="p-2 bg-red-400 rounded-md flex items-center justify-center"
+        >
+          Disconnect
         </button>
       </div>
     </div>

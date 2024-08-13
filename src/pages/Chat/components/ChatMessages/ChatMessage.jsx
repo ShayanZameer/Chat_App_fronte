@@ -5,15 +5,14 @@ const ChatMessages = ({ messages }) => {
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
-      {messages.map((message) => {
-        // Extract user ID from the sender object
+      {messages.map((message, index) => {
         const messageSenderId = message.sender._id;
 
         const isCurrentUser = messageSenderId === currentUserId;
 
         return (
           <div
-            key={message._id}
+            key={index++}
             className={`flex mb-2 ${
               isCurrentUser ? "justify-end" : "justify-start"
             }`}
