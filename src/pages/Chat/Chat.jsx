@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SideBar from "./components/chatSidebar/sideBar";
 
-import ChatWindow from "./components/ChatWindow.jx/ChatWindow";
+import ChatWindow from "./components/ChatWindow/ChatWindow";
 
 const Chat = () => {
   const [selectedChat, setSelectedChat] = useState(null);

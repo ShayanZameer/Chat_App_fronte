@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 import axios from "Axios";
 import { FaPaperPlane } from "react-icons/fa";
-
 import ChatDetails from "../ChatDetails/ChatDetails";
 import ChatMessages from "../ChatMessages/ChatMessage";
+
+const socket = io(import.meta.env.VITE_HOST_URL);
 
 const ChatWindow = ({ selectedChat, setSelectedChat }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const messagesRef = useRef(messages);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     if (selectedChat) {
+      console.log("Joining chat:", selectedChat._id);
+      socket.emit("joinChat", selectedChat._id);
+
       const fetchMessages = async () => {
         try {
           const response = await axios.get(
@@ -24,13 +34,50 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
             }
           );
 
-          setMessages(response.data); // Set full messages
+          setMessages(response.data);
         } catch (error) {
           console.error("Error fetching messages:", error);
         }
       };
 
       fetchMessages();
+
+      const handleMessageReceived = (newMessage) => {
+        console.log("New message received:", newMessage);
+        if (newMessage.chatId === selectedChat._id) {
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      };
+
+      socket.on("messageReceived", handleMessageReceived);
+
+      const handleDisconnect = async () => {
+        console.log("Socket disconnected. Storing messages...");
+        try {
+          await axios.post(
+            `${import.meta.env.VITE_HOST_URL}/api/message/sendmessage`,
+            {
+              chatId: selectedChat._id,
+              messages: messagesRef.current,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Error storing messages:", error);
+        }
+      };
+
+      socket.on("disconnect", handleDisconnect);
+
+      return () => {
+        console.log("Cleaning up socket listeners for chat:", selectedChat._id);
+        socket.off("messageReceived", handleMessageReceived);
+        socket.off("disconnect", handleDisconnect);
+      };
     }
   }, [selectedChat]);
 
@@ -44,17 +91,11 @@ const ChatWindow = ({ selectedChat, setSelectedChat }) => {
       };
 
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_HOST_URL}/api/message/sendmessage`,
-          newMessage,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-          }
-        );
+        // Emit message to server
+        socket.emit("sendMessage", newMessage);
 
-        setMessages((prevMessages) => [...prevMessages, response.data]);
+        // Optionally, you can update the local state immediately if needed
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         setMessage("");
       } catch (error) {

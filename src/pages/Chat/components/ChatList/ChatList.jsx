@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "Axios"; // Make sure 'axios' is properly imported with a lowercase 'a'.
+import axios from "Axios";
 import ChatItem from "../ChatItem/ChatItem";
 
 const ChatsList = ({ setSelectedChat }) => {
